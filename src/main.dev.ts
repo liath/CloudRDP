@@ -110,10 +110,6 @@ const createWindow = async () => {
         });
         return;
       }
-      callback({
-        responseHeaders: details.responseHeaders,
-      });
-      return;
 
       // outside of devmode we can probably remove all the 'unsafe-inline', not
       // sure what the impact of that or the effort involved though.

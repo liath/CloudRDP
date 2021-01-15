@@ -4,6 +4,7 @@ import crypto from 'crypto';
 
 // ask node land for whatever config aws-sdk resolved there.
 const { ipcRenderer } = window.require('electron');
+
 aws.config.update(ipcRenderer.sendSync('aws-bootstrap'));
 
 let ec2 = new aws.EC2();

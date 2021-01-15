@@ -5,13 +5,4 @@ import { Provider } from 'react-redux';
 import App from './App';
 import './App.global.css';
 
-import configureStore from './store';
-
-const store = configureStore();
-
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-);
+render(<App />, document.getElementById('root'));

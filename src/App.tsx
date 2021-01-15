@@ -1,9 +1,14 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hosts from './components/Hosts';
+
+import configureStore from './store';
+
+const store = configureStore();
 
 export default function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -63,13 +68,15 @@ export default function App() {
     });
   }, [prefersDarkMode]);
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <Switch>
-          <Route path="/" component={Hosts} />
-        </Switch>
-      </Router>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Switch>
+            <Route path="/" component={Hosts} />
+          </Switch>
+        </Router>
+      </ThemeProvider>
+    </Provider>
   );
 }

@@ -13,3 +13,5 @@ export const awsBootstrap = (event) => {
   };
 };
 ipcMain.on('aws-bootstrap', awsBootstrap);
+
+export default awsBootstrap;
