@@ -1,0 +1,13 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
+
+body {
+  color: white;
+  background: #3f3f3f;
+  font-family: 'Noto Sans JP', sans-serif;
+  overflow-y: hidden;
+}
+

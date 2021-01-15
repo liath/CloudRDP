@@ -1,0 +1,18 @@
+{
+  "name": "cloudrdp",
+  "productName": "cloudrdp",
+  "version": "0.0.1",
+  "description": "Electron based app to allow quick access to RDP on your cloud instances.",
+  "main": "./main.prod.js",
+  "author": {
+    "name": "John Jones",
+    "email": "john@exthilion.org",
+    "url": "https://github.com/liath"
+  },
+  "scripts": {
+    "electron-rebuild": "node -r ../.erb/scripts/BabelRegister.js ../.erb/scripts/ElectronRebuild.js",
+    "postinstall": "yarn electron-rebuild"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}
