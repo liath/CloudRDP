@@ -5,6 +5,16 @@ module.exports = {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
     'no-console': 0,
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
   },
   parserOptions: {
     ecmaVersion: 2020,
