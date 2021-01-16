@@ -21,7 +21,6 @@
     "allowJs": true,
     "skipLibCheck": true
   },
-  "include": ["src/components/**/*.ts"],
   "exclude": [
     "test",
     "release",
