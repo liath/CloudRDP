@@ -1,5 +1,4 @@
 /* eslint global-require: off, no-console: off */
-
 /**
  * This module executes inside of electron's main process. You can start
  * electron renderer process from here and communicate with the other processes
@@ -136,17 +135,6 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  // disable navigation
-  mainWindow.on('web-contents-created', (_event, contents) => {
-    contents.on('will-navigate', (event, navigationUrl) => {
-      const parsedUrl = new URL(navigationUrl);
-
-      if (parsedUrl.origin !== 'https://example.com') {
-        event.preventDefault();
-      }
-    });
-  });
-
   // Open urls in the user's browser
   mainWindow.webContents.on('new-window', (event, url) => {
     event.preventDefault();
@@ -161,7 +149,6 @@ const createWindow = async () => {
 /**
  * Add event listeners...
  */
-
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
@@ -176,4 +163,15 @@ app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) createWindow();
+});
+
+// disable navigation
+app.on('web-contents-created', (_event, webContents) => {
+  webContents.on('will-navigate', (event, navigationUrl) => {
+    const parsedUrl = new URL(navigationUrl);
+
+    if (parsedUrl.origin !== 'https://example.com') {
+      event.preventDefault();
+    }
+  });
 });

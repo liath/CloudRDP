@@ -2,16 +2,16 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 
-global.window.require = (package) => {
-  if (package === 'electron')
+global.window.require = ((name: string) => {
+  if (name === 'electron')
     return {
       ipcRenderer: {
         sendSync: () => ({}),
       },
     };
 
-  throw new Error(`need mock for ${package}`);
-};
+  throw new Error(`need mock for ${name}`);
+}) as NodeRequire;
 global.console.error = () => {};
 global.console.log = () => {};
 

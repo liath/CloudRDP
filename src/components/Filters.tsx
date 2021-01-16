@@ -12,11 +12,17 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import Tooltip from '@material-ui/core/Tooltip';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-const parseHosts = (hosts) =>
+import * as host from './Hosts/host';
+
+interface TagFilter {
+  [key: string]: string[];
+}
+
+const parseHosts = (hosts: host.Host[]) =>
   _.chain(hosts)
     .filter((x) => !x.hidden)
     .flatMap('tags')
-    .reduce((s, x) => {
+    .reduce((s: TagFilter, x: host.Tag) => {
       // skip Name as we surface that in the table already.
       if (x.Key === 'Name') return s;
 
@@ -35,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     width: 300,
     flexShrink: 0,
     '& > #tag-filters': {
-      height: `calc(100vh - ${30 + theme.spacing(3)}px)`,
+      height: `calc(100vh - ${36 + theme.spacing(3)}px)`,
       overflowY: 'auto',
       overflowX: 'hidden',
       '& > * + *': {
@@ -45,58 +51,69 @@ const useStyles = makeStyles((theme) => ({
     '& > #toolbar': {
       display: 'flex',
       paddingLeft: theme.spacing(1),
-      paddingTop: theme.spacing(1),
       color: theme.palette.text.secondary,
+      paddingTop: 0,
       height: '56px',
       '& > h6': {
         flexGrow: 1,
+        paddingTop: theme.spacing(1),
       },
       '& > button': {
         marginRight: theme.spacing(1),
+        marginTop: 2,
       },
     },
   },
 }));
 
-const Filters = ({ hosts, getHosts, setHosts }) => {
+const Filters = ({
+  hosts,
+  getHosts,
+  setHosts,
+}: {
+  hosts: host.Host[];
+  getHosts: () => Promise<host.Host[]>;
+  setHosts: React.Dispatch<React.SetStateAction<host.Host[]>>;
+}) => {
   // the actual filter settings
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState<TagFilter>({});
   // and the available filters for the UI
-  const [tagFilters, setTagFilters] = useState([]);
+  const [tagFilters, setTagFilters] = useState<[string, string[]][]>([]);
   // facilitates clearing autocompletes
   const [reset, clearForm] = useState(true);
 
-  // update list of available tags to filter when hosts change
+  // update list of available tags to filter when hosts or filter settings change
   useEffect(() => setTagFilters(parseHosts(hosts)), [hosts, filter]);
 
   // mark filtered hosts as hidden
-  useEffect(() => {
+  const updateFilter = (newFilter: TagFilter) => {
+    setFilter(newFilter);
     const resetHosts = hosts.map((x) => ({ ...x, hidden: false }));
 
     // show everything when no filters are applied
-    if (_.isEmpty(filter)) {
+    if (_.isEmpty(newFilter)) {
       setHosts(resetHosts);
       return;
     }
 
-    const newHosts = _.entries(filter).reduce((keep, tag) => {
+    const newHosts = _.entries(newFilter).reduce((keep, tag) => {
       const [name, values] = tag;
 
-      return keep.map((host) => {
-        if (host.hidden) return host;
+      return keep.map((h) => {
+        if (h.hidden) return h;
 
-        const t = host.tags.find((x) => x.Key === name);
+        const t = h.tags.find((x) => x.Key === name);
         // hide the host if it doesn't have the target tag or the tag's value
         // isn't in the filter
         return {
-          ...host,
-          hidden: _.isEmpty(t) || !values.includes(t.Value),
+          ...h,
+          hidden: !t || _.isEmpty(t) || !values.includes(t.Value),
         };
       });
     }, resetHosts);
 
     setHosts(newHosts);
-  }, [filter]);
+  };
 
   const classes = useStyles();
 
@@ -104,7 +121,7 @@ const Filters = ({ hosts, getHosts, setHosts }) => {
     <div className={classes.root}>
       <CssBaseline />
       <div id="toolbar">
-        <Typography className={classes.title} variant="h6" id="tableTitle">
+        <Typography variant="h6" id="tableTitle">
           Filters
         </Typography>
         {!_.isEmpty(filter) && (
@@ -114,7 +131,7 @@ const Filters = ({ hosts, getHosts, setHosts }) => {
               aria-label="clear-filters"
               onClick={() => {
                 clearForm(!reset);
-                setFilter({});
+                updateFilter({});
               }}
             >
               <ClearAllIcon />
@@ -159,11 +176,11 @@ const Filters = ({ hosts, getHosts, setHosts }) => {
             )}
             onChange={(_event, value) => {
               if (_.isEmpty(value)) {
-                setFilter(_.omit(filter, name));
+                updateFilter(_.omit(filter, name));
                 return;
               }
 
-              setFilter({
+              updateFilter({
                 ...filter,
                 [name]: value,
               });
@@ -177,17 +194,19 @@ const Filters = ({ hosts, getHosts, setHosts }) => {
 
 Filters.propTypes = {
   hosts: PropTypes.arrayOf(
-    PropTypes.shape({
+    PropTypes.exact({
       id: PropTypes.string,
       ip: PropTypes.string,
       name: PropTypes.string,
+      keyName: PropTypes.string,
       tags: PropTypes.arrayOf(
-        PropTypes.shape({
+        PropTypes.exact({
           Key: PropTypes.string,
           Value: PropTypes.string,
         })
       ),
       hidden: PropTypes.bool,
+      status: PropTypes.string,
     })
   ).isRequired,
   getHosts: PropTypes.func.isRequired,

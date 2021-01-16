@@ -1,29 +1,20 @@
 import _ from 'lodash';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import TableContainer from '@material-ui/core/TableContainer';
 import { DataGrid } from '@material-ui/data-grid';
 import { makeStyles } from '@material-ui/core/styles';
+
+import * as host from './host';
 import Filters from '../Filters';
 
 import { connectHost, getHosts, regionUpdated } from './data';
 
 const ipValue = _.memoize((ip) =>
-  Buffer.from(ip.split('.').map((o) => parseInt(o, 10)))
+  Buffer.from(ip.split('.').map((o: string) => parseInt(o, 10)))
 );
-
-const columnDefinitions = [
-  { field: 'id', headerName: 'InstanceID', width: 175 },
-  {
-    field: 'ip',
-    headerName: 'IP Address',
-    width: 175,
-    sortComparator: (a, b) => Buffer.compare(ipValue(a), ipValue(b)),
-  },
-  { field: 'name', headerName: 'Name', flex: 0.5 },
-  { field: 'status', headerName: 'Status', flex: 0.5 },
-];
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -36,8 +27,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Hosts = ({ region, ssmPrefix }) => {
-  const [hosts, setHosts] = useState([]);
+const Hosts = ({
+  region,
+  ssmPrefix,
+}: {
+  region: string;
+  ssmPrefix: string;
+}) => {
+  const [hosts, setHosts] = useState<host.Host[]>([]);
 
   // when the AWS region changes, refresh hosts
   useEffect(() => {
@@ -49,31 +46,58 @@ const Hosts = ({ region, ssmPrefix }) => {
       });
   }, [region]);
 
-  const classes = useStyles();
+  // hopefully altogether this makes status updates serial
+  const [mutex, setMutex] = useState(true);
+  const updateStatus = useCallback(
+    (id, s) =>
+      setHosts(hosts.map((x) => (x.id === id ? { ...x, status: s || '' } : x))),
+    [hosts]
+  );
 
+  const classes = useStyles();
   return (
-    <div style={{ display: 'flex' }}>
-      <TableContainer style={{ height: '100vh' }}>
-        <DataGrid
-          className={classes.root}
-          columns={columnDefinitions}
-          rows={hosts.filter((x) => !x.hidden)}
-          hideFooterSelectedRowCount
-          onSelectionChange={(event) => {
-            const id = event.rowIds[0];
-            const host = hosts.find((x) => x.id === id);
-            const setStatus = (status) => {
-              setHosts(hosts.map((x) => (x.id === id ? { ...x, status } : x)));
-            };
-            connectHost(host, ssmPrefix, setStatus)
-              .then(setStatus)
-              .catch((error) => {
-                console.log('uncaught error???', error);
-              });
-          }}
-        />
-      </TableContainer>
-      <Filters hosts={hosts} setHosts={setHosts} getHosts={getHosts} />
+    <div>
+      <div style={{ height: 4 }}>
+        <LinearProgress style={{ display: mutex ? 'none' : 'block' }} />
+      </div>
+      <div style={{ display: 'flex' }}>
+        <TableContainer style={{ height: '100vh' }}>
+          <DataGrid
+            className={classes.root}
+            columns={[
+              { field: 'id', headerName: 'InstanceID', width: 175 },
+              {
+                field: 'ip',
+                headerName: 'IP Address',
+                width: 175,
+                sortComparator: (a, b) =>
+                  Buffer.compare(ipValue(a), ipValue(b)),
+              },
+              { field: 'name', headerName: 'Name', flex: 0.5 },
+              { field: 'status', headerName: 'Status', flex: 0.5 },
+            ]}
+            rows={hosts.filter((x) => !x.hidden)}
+            hideFooterSelectedRowCount
+            onSelectionChange={(event) => {
+              if (!mutex) return null;
+              setMutex(false);
+
+              const id = event.rowIds[0];
+              const target = hosts.find((x) => x.id === id);
+
+              const ps = (s: string | void) => updateStatus(id, s);
+
+              return connectHost(target, ssmPrefix, ps)
+                .then(ps)
+                .catch((error) => {
+                  console.log('uncaught error???', error);
+                })
+                .then(() => setMutex(true));
+            }}
+          />
+        </TableContainer>
+        <Filters hosts={hosts} setHosts={setHosts} getHosts={getHosts} />
+      </div>
     </div>
   );
 };

@@ -47,6 +47,7 @@ export const getHosts = async (token = false) => {
         name: name ? name.Value : '',
         keyName: i.KeyName,
         tags: i.Tags,
+        status: i.KeyName ? '' : 'No password in EC2',
       };
     });
 

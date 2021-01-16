@@ -14,12 +14,12 @@ export default function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(() => {
-    const base = {
+    const mode = prefersDarkMode ? 'dark' : 'light';
+    const bt = createMuiTheme({
       palette: {
-        type: prefersDarkMode ? 'dark' : 'light',
+        type: mode,
       },
-    };
-    const bt = createMuiTheme(base);
+    });
 
     const sbTheme = prefersDarkMode
       ? {
@@ -35,7 +35,9 @@ export default function App() {
         };
 
     return createMuiTheme({
-      ...base,
+      palette: {
+        type: mode,
+      },
       overrides: {
         MuiCssBaseline: {
           '@global': {

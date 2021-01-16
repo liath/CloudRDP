@@ -4,6 +4,7 @@ module.exports = {
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
+    'no-console': 0,
   },
   parserOptions: {
     ecmaVersion: 2020,
