@@ -6,7 +6,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'no-console': 0,
     'import/extensions': [
-      'error',
+      'warn',
       'ignorePackages',
       {
         js: 'never',
