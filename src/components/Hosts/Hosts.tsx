@@ -18,6 +18,10 @@ const ipValue = _.memoize((ip) =>
 
 const useStyles = makeStyles(() => ({
   root: {
+    'border-top': 'none',
+    'border-left': 'none',
+    'border-bottom': 'none',
+    'border-radius': 0,
     '& .MuiDataGrid-cell:focus': {
       outline: 'none',
     },
