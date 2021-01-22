@@ -11,7 +11,7 @@ import configureStore from './store';
 
 const { store, persistor } = configureStore();
 
-const mapStateToProps = (state) => _.pick(state.config, []);
+const mapStateToProps = (state) => _.pick(state.config, ['analytics']);
 const mapDispatchToProps = {};
 
 const App = connect(mapStateToProps, mapDispatchToProps)(app);

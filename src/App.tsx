@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -9,11 +10,15 @@ import Hosts from './components/Hosts';
 
 // Gives us splat tracking and an idea how many users there are.
 Nucleus.init('600a02d29971711903443e4d', {
-  // TODO: add config item for this and make it opt-out by default
   disableTracking: true,
 });
 
-const App = () => {
+const App = ({ analytics }) => {
+  useEffect(() => {
+    if (analytics) Nucleus.enableTracking();
+    else Nucleus.disableTracking();
+  }, [analytics]);
+
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(() => {
@@ -81,6 +86,8 @@ const App = () => {
   );
 };
 
-App.propTypes = {};
+App.propTypes = {
+  analytics: PropTypes.bool.isRequired,
+};
 
 export default App;
