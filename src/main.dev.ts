@@ -115,7 +115,7 @@ const createWindow = async () => {
       const loc = `localhost:${process.env.PORT || 1212}`;
       const csp = [
         `default-src 'none'`,
-        `connect-src https://*.amazonaws.com http://${loc} ws://${loc}`,
+        `connect-src https://*.amazonaws.com http://${loc} ws://${loc} wss://app.nucleus.sh`,
         `style-src-elem file: 'unsafe-inline' https://fonts.googleapis.com`,
         `script-src 'unsafe-inline'`,
         `script-src-elem file: 'unsafe-inline' http://${loc}`,

@@ -1,14 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Nucleus from 'nucleus-nodejs';
+
 import Hosts from './components/Hosts';
 
 import configureStore from './store';
 
 const store = configureStore();
+
+// Gives us splat tracking and an idea how many users there are.
+Nucleus.init('600a02d29971711903443e4d', {
+  // TODO: add config item for this and make it opt-out by default
+  disableTracking: true,
+});
 
 export default function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -69,6 +77,9 @@ export default function App() {
       },
     });
   }, [prefersDarkMode]);
+
+  useEffect(() => Nucleus.appStarted(), []);
+
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>

@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <title>CloudRDP</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src-elem file: 'unsafe-inline' https://fonts.googleapis.com; script-src-elem file: 'unsafe-inline' http://localhost:1212; connect-src https://*.amazonaws.com http://localhost:1212 ws://localhost:1212; font-src https://fonts.gstatic.com">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src-elem file: 'unsafe-inline' https://fonts.googleapis.com; script-src-elem file: 'unsafe-inline' http://localhost:1212; connect-src https://*.amazonaws.com http://localhost:1212 ws://localhost:1212 wss://app.nucleus.sh; font-src https://fonts.gstatic.com"
+    />
     <script>
       (() => {
         const link = document.createElement('link');
