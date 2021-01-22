@@ -7,6 +7,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Nucleus from 'nucleus-nodejs';
 
 import Hosts from './components/Hosts';
+import Settings from './components/Settings';
 
 // Gives us splat tracking and an idea how many users there are.
 Nucleus.init('600a02d29971711903443e4d', {
@@ -79,6 +80,7 @@ const App = ({ analytics }) => {
       <CssBaseline />
       <Router>
         <Switch>
+          <Route exact path="/settings" component={Settings} />
           <Route path="/" component={Hosts} />
         </Switch>
       </Router>

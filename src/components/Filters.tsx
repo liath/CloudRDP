@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,8 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import SettingsIcon from '@material-ui/icons/Settings';
 import Tooltip from '@material-ui/core/Tooltip';
-import CssBaseline from '@material-ui/core/CssBaseline';
 
 import * as host from './Hosts/host';
 
@@ -58,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         paddingTop: theme.spacing(1),
       },
-      '& > button': {
+      '& > button, & > a': {
         marginRight: theme.spacing(1),
         marginTop: 2,
       },
@@ -119,7 +120,6 @@ const Filters = ({
 
   return (
     <div className={classes.root}>
-      <CssBaseline />
       <div id="toolbar">
         <Typography variant="h6" id="tableTitle">
           Filters
@@ -138,7 +138,7 @@ const Filters = ({
             </Fab>
           </Tooltip>
         )}
-        <Tooltip title="Reload from AWS">
+        <Tooltip title="Reload">
           <Fab
             color="primary"
             aria-label="refresh"
@@ -155,6 +155,13 @@ const Filters = ({
           >
             <RefreshIcon />
           </Fab>
+        </Tooltip>
+        <Tooltip title="Settings">
+          <Link to="/settings">
+            <Fab color="secondary" aria-label="settings">
+              <SettingsIcon />
+            </Fab>
+          </Link>
         </Tooltip>
       </div>
       <div id="tag-filters">

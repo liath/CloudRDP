@@ -141,6 +141,13 @@ const createWindow = async () => {
     shell.openExternal(url);
   });
 
+  // fixes issues where when the app is refreshed while on a page other than
+  // the main one (`/`) it will fail to load.
+  mainWindow.webContents.on('did-fail-load', () => {
+    if (!mainWindow) return;
+    mainWindow.loadURL(`file://${__dirname}/index.html`);
+  });
+
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
@@ -167,11 +174,7 @@ app.on('activate', () => {
 
 // disable navigation
 app.on('web-contents-created', (_event, webContents) => {
-  webContents.on('will-navigate', (event, navigationUrl) => {
-    const parsedUrl = new URL(navigationUrl);
-
-    if (parsedUrl.origin !== 'https://example.com') {
-      event.preventDefault();
-    }
+  webContents.on('will-navigate', (event) => {
+    event.preventDefault();
   });
 });
