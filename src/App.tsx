@@ -22,6 +22,7 @@ export default function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(() => {
+    // TODO: make this a setting, probably 'light', 'dark', 'default'
     const mode = prefersDarkMode ? 'dark' : 'light';
     const bt = createMuiTheme({
       palette: {
@@ -29,18 +30,11 @@ export default function App() {
       },
     });
 
-    const sbTheme = prefersDarkMode
-      ? {
-          // keep datagrids colors since they like them so much
-          bg: '#202022',
-          tb: '#585859',
-          eb: '#838384',
-        }
-      : {
-          bg: bt.palette.grey[300],
-          tb: bt.palette.grey[400],
-          eb: bt.palette.grey[500],
-        };
+    const sbTheme = {
+      bg: bt.palette.background.default,
+      tb: bt.palette.divider,
+      eb: bt.palette.action.selected,
+    };
 
     return createMuiTheme({
       palette: {
@@ -50,25 +44,25 @@ export default function App() {
         MuiCssBaseline: {
           '@global': {
             html: {
-              '& *::-webkit-scrollbar': {
+              '& *::-webkit-scrollbar, & .MuiDataGrid-root *::-webkit-scrollbar': {
                 backgroundColor: sbTheme.bg,
               },
-              '& *::-webkit-scrollbar-thumb': {
+              '& *::-webkit-scrollbar-thumb, & .MuiDataGrid-root *::-webkit-scrollbar-thumb': {
                 border: `3px solid ${sbTheme.bg}`,
                 minHeight: 24,
                 borderRadius: 8,
                 backgroundColor: sbTheme.tb,
               },
-              '& *::-webkit-scrollbar-thumb:focus': {
+              '& *::-webkit-scrollbar-thumb:focus, & .MuiDataGrid-root *::-webkit-scrollbar-thumb:focus': {
                 backgroundColor: sbTheme.eb,
               },
-              '& *::-webkit-scrollbar-thumb:active': {
+              '& *::-webkit-scrollbar-thumb:active, & .MuiDataGrid-root *::-webkit-scrollbar-thumb:active': {
                 backgroundColor: sbTheme.eb,
               },
-              '& *::-webkit-scrollbar-thumb:hover': {
+              '& *::-webkit-scrollbar-thumb:hover, & .MuiDataGrid-root *::-webkit-scrollbar-thumb:hover': {
                 backgroundColor: sbTheme.eb,
               },
-              '& *::-webkit-scrollbar-corner': {
+              '& *::-webkit-scrollbar-corner, & .MuiDataGrid-root *::-webkit-scrollbar-corner': {
                 backgroundColor: sbTheme.bg,
               },
             },
