@@ -1,7 +1,7 @@
 {
   "name": "cloudrdp",
   "productName": "cloudrdp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Electron based app to allow quick access to RDP on your cloud instances.",
   "main": "./main.prod.js",
   "author": {
