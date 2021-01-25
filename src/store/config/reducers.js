@@ -2,6 +2,7 @@ const initialState = {
   analytics: false,
   region: 'us-west-2',
   ssmPrefix: '/cloudrdp',
+  theme: 'default',
 };
 
 function config(state = initialState, action) {
@@ -21,6 +22,12 @@ function config(state = initialState, action) {
         ...state,
         ssmPrefix: action.ssmPrefix,
       };
+    case 'SET_THEME':
+      return {
+        ...state,
+        theme: action.theme,
+      };
+
     default:
       return state;
   }

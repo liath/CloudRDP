@@ -24,3 +24,12 @@ export const setSSMPrefix = (ssmPrefix) => {
     ssmPrefix,
   };
 };
+
+export const setTheme = (theme) => {
+  console.log(`[store/config] set theme to: ${theme}`);
+
+  return {
+    type: 'SET_THEME',
+    theme,
+  };
+};

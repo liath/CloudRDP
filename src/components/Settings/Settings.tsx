@@ -2,32 +2,47 @@ import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Autocomplete } from '@material-ui/lab';
 import {
-  Checkbox,
   Fab,
   FormControl,
   FormControlLabel,
+  FormGroup,
   FormLabel,
+  Grid,
+  MenuItem,
+  Paper,
+  Select,
+  Switch,
   TextField,
   Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
+import { Close } from '@material-ui/icons';
 
 import { getRegions, regionUpdated } from './data';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    overflow: 'hidden',
   },
   form: {
-    '& > *': {
-      marginTop: theme.spacing(1),
+    '& .MuiPaper-root': {
+      padding: theme.spacing(1),
+      '& > div, & > fieldset': {
+        marginTop: theme.spacing(1),
+      },
+      '& > *': {
+        width: '100%',
+      },
     },
   },
   exit: {
-    float: 'right',
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
   },
 }));
 
@@ -35,16 +50,20 @@ const Settings = ({
   analytics,
   region,
   ssmPrefix,
+  theme,
   setAnalytics,
   setRegion,
   setSSMPrefix,
+  setTheme,
 }: {
   analytics: boolean;
   region: string;
+  theme: string;
   ssmPrefix: string;
   setAnalytics: (analytics: boolean) => void;
   setRegion: (region: string) => void;
   setSSMPrefix: (ssmPrefix: string) => void;
+  setTheme: (theme: string) => void;
 }) => {
   const [regions, setRegions] = useState<string[]>([]);
 
@@ -60,55 +79,82 @@ const Settings = ({
       <Tooltip className={classes.exit} title="Exit Settings">
         <Link to="/">
           <Fab color="primary" aria-label="exit-settings">
-            <CloseIcon />
+            <Close />
           </Fab>
         </Link>
       </Tooltip>
-      <FormControl className={classes.form} component="fieldset">
-        <FormLabel component="legend">Settings</FormLabel>
-        <Autocomplete
-          blurOnSelect
-          value={region}
-          options={_.uniq(regions)}
-          renderInput={(params) => (
-            <TextField
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...params}
-              variant="standard"
-              label="region"
-              placeholder="region"
-            />
-          )}
-          onChange={(_event, value) => {
-            if (!value || _.isEmpty(value)) {
-              return;
-            }
+      <Grid container spacing={3} className={classes.form}>
+        <Grid item xs={12}>
+          <Typography variant="h6">Settings</Typography>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Paper>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Theme</FormLabel>
+              <Select
+                value={theme}
+                onChange={(event) => {
+                  const t = event.target.value;
+                  setTheme(t ? String(t) : 'default');
+                }}
+              >
+                <MenuItem value="default">Default (use OS setting)</MenuItem>
+                <MenuItem value="dark">Dark</MenuItem>
+                <MenuItem value="light">Light</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Analytics Participation</FormLabel>
+              <FormGroup>
+                <FormControlLabel
+                  label={analytics ? 'enabled' : 'not enabled'}
+                  control={
+                    <Switch
+                      checked={analytics}
+                      onChange={(event) => setAnalytics(event.target.checked)}
+                      name="analytics-opt-in"
+                    />
+                  }
+                />
+              </FormGroup>
+            </FormControl>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Paper>
+            <FormLabel component="legend">AWS</FormLabel>
+            <Autocomplete
+              blurOnSelect
+              value={region}
+              options={_.uniq(regions)}
+              renderInput={(params) => (
+                <TextField
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...params}
+                  variant="standard"
+                  label="Region"
+                  placeholder="region"
+                />
+              )}
+              onChange={(_event, value) => {
+                if (!value || _.isEmpty(value)) {
+                  return;
+                }
 
-            setRegion(value);
-          }}
-        />
-        <TextField
-          label="SSM Prefix"
-          defaultValue={ssmPrefix}
-          onBlur={(event) => {
-            const val = event.target.value;
-            if (val !== ssmPrefix) setSSMPrefix(val);
-          }}
-        />
-        <FormControlLabel
-          label="Analytics Participation"
-          labelPlacement="start"
-          control={
-            <Checkbox
-              aria-label="analytics participation"
-              checked={analytics}
-              onChange={(event, value) => {
-                setAnalytics(value);
+                setRegion(value);
               }}
             />
-          }
-        />
-      </FormControl>
+            <TextField
+              label="SSM Prefix"
+              defaultValue={ssmPrefix}
+              onBlur={(event) => {
+                const val = event.target.value;
+                if (val !== ssmPrefix) setSSMPrefix(val);
+              }}
+            />
+          </Paper>
+        </Grid>
+      </Grid>
     </div>
   );
 };
@@ -116,10 +162,12 @@ const Settings = ({
 Settings.propTypes = {
   analytics: PropTypes.bool.isRequired,
   region: PropTypes.string.isRequired,
+  theme: PropTypes.string.isRequired,
   ssmPrefix: PropTypes.string.isRequired,
   setAnalytics: PropTypes.func.isRequired,
   setRegion: PropTypes.func.isRequired,
   setSSMPrefix: PropTypes.func.isRequired,
+  setTheme: PropTypes.func.isRequired,
 };
 
 export default Settings;

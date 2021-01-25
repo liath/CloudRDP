@@ -5,9 +5,10 @@ import {
   setAnalytics,
   setRegion,
   setSSMPrefix,
+  setTheme,
 } from '../../store/config/actions';
 
 const mapStateToProps = (state) =>
-  _.pick(state.config, ['analytics', 'region', 'ssmPrefix']);
-const mapDispatchToProps = { setAnalytics, setRegion, setSSMPrefix };
+  _.pick(state.config, ['analytics', 'region', 'ssmPrefix', 'theme']);
+const mapDispatchToProps = { setAnalytics, setRegion, setSSMPrefix, setTheme };
 export default connect(mapStateToProps, mapDispatchToProps)(Settings);
