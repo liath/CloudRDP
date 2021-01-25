@@ -5,13 +5,16 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Fab from '@material-ui/core/Fab';
+import {
+  Button,
+  ButtonGroup,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SettingsIcon from '@material-ui/icons/Settings';
-import Tooltip from '@material-ui/core/Tooltip';
 
 import * as host from './Hosts/host';
 
@@ -59,9 +62,10 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         paddingTop: theme.spacing(1),
       },
-      '& > button, & > a': {
+      '& > .MuiButtonGroup-root': {
         marginRight: theme.spacing(1),
-        marginTop: 2,
+        marginTop: theme.spacing(1),
+        height: 40,
       },
     },
   },
@@ -124,45 +128,44 @@ const Filters = ({
         <Typography variant="h6" id="tableTitle">
           Filters
         </Typography>
-        {!_.isEmpty(filter) && (
-          <Tooltip title="Clear Filters">
-            <Fab
+        <ButtonGroup variant="contained" size="small">
+          {!_.isEmpty(filter) && (
+            <Tooltip title="Clear Filters">
+              <Button
+                aria-label="clear-filters"
+                onClick={() => {
+                  clearForm(!reset);
+                  updateFilter({});
+                }}
+              >
+                <ClearAllIcon />
+              </Button>
+            </Tooltip>
+          )}
+          <Tooltip title="Reload">
+            <Button
               color="primary"
-              aria-label="clear-filters"
+              aria-label="refresh"
               onClick={() => {
-                clearForm(!reset);
-                updateFilter({});
+                getHosts()
+                  .then((x) => {
+                    setHosts(x);
+                    // reloading the hosts list doesn't require that we reset the
+                    // filters, not sure what is better ux...
+                    return clearForm(!reset);
+                  })
+                  .catch(() => {});
               }}
             >
-              <ClearAllIcon />
-            </Fab>
+              <RefreshIcon />
+            </Button>
           </Tooltip>
-        )}
-        <Tooltip title="Reload">
-          <Fab
-            color="primary"
-            aria-label="refresh"
-            onClick={() => {
-              getHosts()
-                .then((x) => {
-                  setHosts(x);
-                  // reloading the hosts list doesn't require that we reset the
-                  // filters, not sure what is better ux...
-                  return clearForm(!reset);
-                })
-                .catch(() => {});
-            }}
-          >
-            <RefreshIcon />
-          </Fab>
-        </Tooltip>
-        <Tooltip title="Settings">
-          <Link to="/settings">
-            <Fab color="secondary" aria-label="settings">
+          <Tooltip title="Settings">
+            <Button component={Link} to="/settings" aria-label="settings">
               <SettingsIcon />
-            </Fab>
-          </Link>
-        </Tooltip>
+            </Button>
+          </Tooltip>
+        </ButtonGroup>
       </div>
       <div id="tag-filters">
         {tagFilters.map(([name, values]) => (

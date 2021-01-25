@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Autocomplete } from '@material-ui/lab';
 import {
-  Fab,
+  Button,
+  ButtonGroup,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   form: {
     '& .MuiPaper-root': {
       padding: theme.spacing(1),
-      '& > div, & > fieldset': {
+      '& > div, & > fieldset:not(:first-child)': {
         marginTop: theme.spacing(1),
       },
       '& > *': {
@@ -42,7 +43,11 @@ const useStyles = makeStyles((theme) => ({
   exit: {
     position: 'absolute',
     right: theme.spacing(1),
-    top: theme.spacing(1),
+    top: theme.spacing(1) + 4,
+    height: 40,
+    '& > *': {
+      padding: 6,
+    },
   },
 }));
 
@@ -76,13 +81,18 @@ const Settings = ({
 
   return (
     <div className={classes.root}>
-      <Tooltip className={classes.exit} title="Exit Settings">
-        <Link to="/">
-          <Fab color="primary" aria-label="exit-settings">
+      <ButtonGroup variant="contained" className={classes.exit}>
+        <Tooltip title="Exit Settings">
+          <Button
+            component={Link}
+            to="/"
+            color="primary"
+            aria-label="exit-settings"
+          >
             <Close />
-          </Fab>
-        </Link>
-      </Tooltip>
+          </Button>
+        </Tooltip>
+      </ButtonGroup>
       <Grid container spacing={3} className={classes.form}>
         <Grid item xs={12}>
           <Typography variant="h6">Settings</Typography>
